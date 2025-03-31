@@ -26,12 +26,8 @@ public class ProdutoController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> buscarPorProduto(@PathVariable Long id){
-        try{
-            Produto produto = produtoService.buscarPorId(id);
-            return ResponseEntity.ok(produto);
-        }catch (RecursoNaoEncontradoException e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
+        Produto produto = produtoService.buscarPorId(id);
+        return ResponseEntity.ok(produto);
     }
 
     @PostMapping
@@ -42,12 +38,8 @@ public class ProdutoController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deletarPorId(@PathVariable Long id) {
-        try {
-            produtoService.delete(id);
-            return ResponseEntity.noContent().build();
-        }catch (RecursoNaoEncontradoException e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
+        produtoService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 
 }
