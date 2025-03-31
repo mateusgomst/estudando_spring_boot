@@ -1,7 +1,9 @@
 package com.example.meu_primeiro_springboot.controller;
 
+import com.example.meu_primeiro_springboot.exceptions.RecursoNaoEncontradoException;
 import com.example.meu_primeiro_springboot.model.Produto;
 import com.example.meu_primeiro_springboot.service.ProdutoService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,10 +25,13 @@ public class ProdutoController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Produto> buscarPorProduto(@PathVariable Long id){
-        return produtoService.buscarPorId(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<?> buscarPorProduto(@PathVariable Long id){
+        try{
+            Produto produto = produtoService.buscarPorId(id);
+            return ResponseEntity.ok(produto);
+        }catch (RecursoNaoEncontradoException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 
     @PostMapping
@@ -36,12 +41,13 @@ public class ProdutoController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletarPorId(@PathVariable Long id) {
-        if (produtoService.buscarPorId(id).isPresent()) {
+    public ResponseEntity<?> deletarPorId(@PathVariable Long id) {
+        try {
             produtoService.delete(id);
-            return ResponseEntity.noContent().build(); // Retorna 204 (sem conteúdo)
+            return ResponseEntity.noContent().build();
+        }catch (RecursoNaoEncontradoException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
-        return ResponseEntity.notFound().build(); // Retorna 404
     }
 
 }
